@@ -75,7 +75,6 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
       select: false,
     },
-    startDates: [Date],
 
     secretTour: {
       type: Boolean,
@@ -129,8 +128,11 @@ tourSchema.virtual('reviews', {
   foreignField: 'tour',
   localField: '_id',
 });
-
-
+tourSchema.virtual('startDates', {
+  ref: 'Dates',
+  foreignField: 'tour',
+  localField: '_id',
+});
 
 //Document middleware: runs before .save() and . create()
 tourSchema.pre('save', function (next) {
@@ -144,17 +146,12 @@ tourSchema.pre(/^find/, function (next) {
   this.start = Date.now();
   next();
 });
-tourSchema.post(/^find/, function (docs, next) {
-  //console.log(docs)
-  console.log(`Query took ${Date.now() - this.start} milliseconds`);
-  next();
-});
 
 tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',
     select: '-__v -passwordChangedAt',
-  });
+  }).populate({ path: 'startDates' });
   next();
 });
 //Aggregation middleware
@@ -175,5 +172,3 @@ next();
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
-
-//POST /tour/234ty/reviews

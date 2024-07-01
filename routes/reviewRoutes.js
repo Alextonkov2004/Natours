@@ -5,7 +5,7 @@ const authController = require('../controllers/authController');
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
-
+//reviewController.checkBooking,
 router
   .route('/')
   .get(authController.protect, reviewController.getAllReviews)
@@ -13,7 +13,7 @@ router
     authController.protect,
     authController.restrictTo('user'),
     reviewController.setTourUserIds,
-    reviewController.checkBooking,
+
     reviewController.createReview,
   );
 

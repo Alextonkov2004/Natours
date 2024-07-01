@@ -1,6 +1,6 @@
 const multer = require('multer');
 const sharp = require('sharp');
-const fsPromises = require('fs/promises')
+const fsPromises = require('fs/promises');
 const Tour = require('../models/tourModel');
 //const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
@@ -29,46 +29,50 @@ exports.uploadTourImage = upload.fields([
 //upload.array() - for many images
 
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
-  console.log(req.files);
+  //console.log(req.files);
   if (!req.files.imageCover || !req.files.images) return next();
   //For deleting files that are no longer needed
   const tour = await Tour.findById(req.params.id);
-    if (
-        tour.images.length > 0 &&
-        await fsPromises.stat(`public/img/tours/${tour.images[0]}`)
-    ) {
-       await Promise.all(tour.images.map(async (image) => {
-          await fsPromises.unlink(`public/img/tours/${image}`);
-        }))
-    }
-    if (
-        tour.imageCover &&
-       await fsPromises.stat(`public/img/tours/${tour.imageCover}`)
-    ) {
-       await fsPromises.unlink(`public/img/tours/${tour.imageCover}`);
-    }
+  if (
+    tour.images.length > 0 &&
+    (await fsPromises.stat(`public/img/tours/${tour.images[0]}`))
+  ) {
+    await Promise.all(
+      tour.images.map(async (image) => {
+        await fsPromises.unlink(`public/img/tours/${image}`);
+      }),
+    );
+  }
+  if (
+    tour.imageCover &&
+    (await fsPromises.stat(`public/img/tours/${tour.imageCover}`))
+  ) {
+    await fsPromises.unlink(`public/img/tours/${tour.imageCover}`);
+  }
   //1) Cover image
-   req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpg`;
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpg`;
   await sharp(req.files.imageCover[0].buffer)
     .resize(2000, 1333)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
     .toFile(`public/img/tours/${req.body.imageCover}`);
-  
-    //2) Images
-req.body.images = [];
-    await Promise.all(req.files.images.map( async (file, i) => {
-  const fileName = `tour-${req.params.id}-${Date.now()}-${i+1}.jpg`
 
-  await sharp(file.buffer)
-    .resize(2000, 1333)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/img/tours/${fileName}`);
-    
-    req.body.images.push(fileName)
-    }))
-    next();
+  //2) Images
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const fileName = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpg`;
+
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${fileName}`);
+
+      req.body.images.push(fileName);
+    }),
+  );
+  next();
 });
 
 exports.alliasTopTours = (req, res, next) => {
@@ -122,14 +126,21 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
 
 exports.getMontlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
-
   const plan = await Tour.aggregate([
+    {
+      $lookup: {
+        from: 'dates',
+        localField: '_id',
+        foreignField: 'tour',
+        as: 'startDates',
+      },
+    },
     {
       $unwind: '$startDates',
     },
     {
       $match: {
-        startDates: {
+        'startDates.date': {
           $gte: new Date(`${year}-01-01`),
           $lte: new Date(`${year}-12-31`),
         },
@@ -137,7 +148,7 @@ exports.getMontlyPlan = catchAsync(async (req, res, next) => {
     },
     {
       $group: {
-        _id: { $month: '$startDates' },
+        _id: { $month: '$startDates.date' },
         numTourStarts: { $sum: 1 },
         tours: {
           $push: '$name',
@@ -186,7 +197,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
   });
 
-  console.log(distance, lat, lng, unit);
+  //console.log(distance, lat, lng, unit);
   res.status(200).json({
     status: 'success',
     results: tours.length,

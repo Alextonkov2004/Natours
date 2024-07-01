@@ -1,9 +1,9 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const catchAsync = require('../utils/catchAsync');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const factory = require('./handleFactory');
-const multer = require('multer');
-const sharp = require('sharp');
 
 /* 
 const multerStorage = multer.diskStorage({
@@ -53,9 +53,6 @@ const filterObj = (obj, ...allowedFields) => {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   //1) Create error if user post password data
-  console.log(req.file);
-  console.log(req.body);
-
   if (req.body.password || req.body.passwordConfirm) {
     return next(
       new AppError(

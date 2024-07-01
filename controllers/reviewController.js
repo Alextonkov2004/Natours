@@ -17,7 +17,7 @@ exports.checkBooking = catchAsync(async (req, res, next) => {
     tour: { _id: req.body.tour },
     user: { _id: req.body.user },
   });
-  console.log(booking);
+
   if (!booking) {
     return next(
       new AppError(

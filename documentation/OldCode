@@ -341,6 +341,56 @@ html
       //message,
 //});
 
-  */
+
+const Stripe = require('stripe');
+
+
+const stripe = Stripe(
+  'pk_test_51PIFCQJZmlCdbHpvJk0X6vdlO8cpRhv5EZRaBu5VYn6GuColiTW3BhskfC7w2jfZUh3M58oarekbLXEATD8QMABy00eouOF3ia',
+);
+/*
+  const bookings = await this.find({ tour: tourId }).populate('date');
+  bookings.forEach(async (el) => {
+    el.date.participants += 1;
+    await Dates.findByIdAndUpdate({participants: el.date.participants + 1})
+    if(el.date.participants === el.tour.maxGroupSize) {
+    el.date.soldOut = true
+    }
+  });
+};
+
+bookingSchema.pre('save', function(next){
+   this.populate({path: 'date'})
+  console.log(this)
+  if(this.date.soldOut === true) {
+    return next(new AppError("You can't book this date for the tour because it is sold out!", 400))
+  }
+  next()
+})
+
+//await stripe.redirectToCheckout({
+    //sessionId: session.data.session.id,
+    //});  
+
+    
+tourSchema.post(/^find/, function (docs, next) {
+  //console.log(docs)
+  console.log(`Query took ${Date.now() - this.start} milliseconds`);
+  next();
+});
+
+ document.getElementById('map').addEventListener('mouseenter', () =>
+        map.fitBounds(bounds, {
+          padding: {
+            top: 200,
+            bottom: 200,
+            left: 100,
+            right: 100,
+          },
+        }))
+        */
+
+
+  
 
  

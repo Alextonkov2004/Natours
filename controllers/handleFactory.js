@@ -5,14 +5,17 @@ const Review = require('../models/reviewModel');
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const document = await Model.findByIdAndDelete(req.params.id);
-    if (!document) {
-      return next(new AppError('No document found with this ID', 404));
-    }
-    if (Model === Review && req.user.id !== document.user.id) {
-      return next(
-        new AppError('You cannot delete reviews that are not yours', 401),
-      );
+    if (Model === Review) {
+      const doc = await Model.findById(req.params.id);
+      if (req.user.id !== doc.user.id && doc.user.role !== 'admin') {
+        return next(
+          new AppError('You cannot delete reviews that are not yours', 401),
+        );
+      }
+      const document = await Model.findByIdAndDelete(req.params.id);
+      if (!document) {
+        return next(new AppError('No document found with this ID', 404));
+      }
     }
     res.status(204).json({
       status: 'success',
@@ -22,6 +25,14 @@ exports.deleteOne = (Model) =>
 
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    if (Model === Review) {
+      const doc = await Model.findById(req.params.id);
+      if (req.user.id !== doc.user.id && doc.user.role !== 'admin') {
+        return next(
+          new AppError('You cannot edit reviews that are not yours', 401),
+        );
+      }
+    }
     const document = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -29,11 +40,7 @@ exports.updateOne = (Model) =>
     if (!document) {
       return next(new AppError('No document found with this ID', 404));
     }
-    if (Model === Review && req.user.id !== document.user.id) {
-      return next(
-        new AppError('You cannot edit reviews that are not yours', 401),
-      );
-    }
+
     res.status(200).json({
       status: 'success',
       data: {

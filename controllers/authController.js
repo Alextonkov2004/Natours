@@ -41,9 +41,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
   });
-const url = `${req.protocol}://${req.get('host')}/me`;
-await new Email(newUser,url).sendWelcome();
-
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  await new Email(newUser, url).sendWelcome();
 
   createSendToken(newUser, 201, res);
 });
@@ -60,36 +59,37 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 //Only for rendered pages, no errors
-exports.isLoggedIn = catchAsync (async (req, res, next) => {
-  if(req.cookies.jwt === 'loggedout') return next()
-  if(req.cookies.jwt) {
-
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt === 'loggedout') return next();
+  if (req.cookies.jwt) {
     //1)Validate the token
-    const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
-  //2) Check if user exists
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser) {
-    return next()
-  }
-  //4)Check if user changed password after the token was issued
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next();
-  }
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET,
+    );
+    //2) Check if user exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+    //4)Check if user changed password after the token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
 
-  //There is logged in user
-  res.locals.user = currentUser
-
-}
-next();
+    //There is logged in user
+    res.locals.user = currentUser;
+  }
+  next();
 });
 
 exports.logout = (req, res) => {
-res.cookie('jwt', 'loggedout', {
-  expires: new Date(Date.now() + 10000),
-  httpOnly: true
-})
-res.status(200).json({status: 'success'})
-}
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
 
 exports.protect = catchAsync(async (req, res, next) => {
   //1) get token and check if it is there
@@ -99,10 +99,9 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-  } else if(req.cookies.jwt) {
-token = req.cookies.jwt
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
-  //console.log(token);
 
   if (!token) {
     return next(
@@ -157,8 +156,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   //3) Send it to user's email
   try {
     const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-      await new Email(user, resetURL).sendPasswordReset()
-    
+    await new Email(user, resetURL).sendPasswordReset();
+
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',

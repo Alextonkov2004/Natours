@@ -56,7 +56,7 @@ exports.getAccount = (req, res) => {
 };
 
 exports.getMyTours = catchAsync(async (req, res, next) => {
-   /* 
+  /* 
   //1) Find all bookings
   const bookings = await Booking.find({ user: req.user.id });
   //2) Find tours with the returned IDs

@@ -4,7 +4,8 @@ include _reviewCard
 
 block append head
     script(src="https://js.stripe.com/v3/")
-    
+    script( src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js')
+    link( href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet')
 
 mixin overviewBox(label, text, icon)
     .overview-box__detail
@@ -39,7 +40,7 @@ block content
                 .overview-box__group
                     h2.heading-secondary.ma-bt-lg Quick facts
 
-                    -const date = tour.startDates[0].toLocaleString('en-us', {month: 'long', year: 'numeric'});
+                    -const date = tour.startDates[0].date.toLocaleString('en-us', {month: 'long', year: 'numeric'});
 
                     +overviewBox('Next date', date, 'calendar')
                     +overviewBox('Difficulty', tour.difficulty, 'trending-up')
@@ -71,7 +72,7 @@ block content
 
 
     section.section-map
-        #map(data-locations= `${JSON.stringify(tour.locations)}`)
+        #map(data-locations= `${JSON.stringify(tour.locations)}`, data-start-location= `${JSON.stringify(tour.startLocation)}`, data-map-token = `${process.env.MAP_BOX_TOKEN}`)
 
     section.section-reviews
         .reviews
