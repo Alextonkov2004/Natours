@@ -6,7 +6,7 @@ const router = express.Router();
 router
   .route('/')
   .get(dateController.getAllDates)
-  .post(dateController.createDate);
+  .post(dateController.checkDate, dateController.createDate);
 
 router
   .route('/:id')

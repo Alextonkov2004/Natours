@@ -7,16 +7,20 @@ exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     if (Model === Review) {
       const doc = await Model.findById(req.params.id);
+      if (!doc) {
+        return next(new AppError('No document found with this ID', 404));
+      }
       if (req.user.id !== doc.user.id && doc.user.role !== 'admin') {
         return next(
           new AppError('You cannot delete reviews that are not yours', 401),
         );
       }
+    }
       const document = await Model.findByIdAndDelete(req.params.id);
       if (!document) {
         return next(new AppError('No document found with this ID', 404));
       }
-    }
+    
     res.status(204).json({
       status: 'success',
       data: null,
