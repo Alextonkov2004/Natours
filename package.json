@@ -7,7 +7,8 @@
     "main": false
   },
   "scripts": {
-    "start": "set NODE_ENV=development&& nodemon server.js",
+    "start": "node server.js",
+    "dev": "set NODE_ENV=development&& nodemon server.js",
     "start:prod": "set NODE_ENV=production&& nodemon server.js",
     "debug": "ndb server.js",
     "build": "parcel build ./public/js/index.js --dist-dir ./public/js/bundled",
@@ -70,5 +71,9 @@
     "string_decoder": "^1.3.0",
     "url": "^0.11.3",
     "vm-browserify": "^1.1.2"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "engines": {
+    "node": ">=6.0.0"
   }
 }
