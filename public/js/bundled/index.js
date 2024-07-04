@@ -1,5 +1,5 @@
 /*eslint-disable */
-(() => {
+!(function () {
   let e = () => {
       let e = document.querySelector('.alert');
       e && e.parentElement.removeChild(e);
