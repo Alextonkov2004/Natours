@@ -74,6 +74,6 @@
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=20.9.0"
   }
 }
