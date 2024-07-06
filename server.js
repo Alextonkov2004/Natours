@@ -14,12 +14,10 @@ const DB = process.env.DATABASE.replace(
   '<password>',
   process.env.DATABASE_PASSWORD,
 );
-mongoose
-  .connect(DB)
-  .then(() => {
-    //console.log(con.connections);
-    console.log('DB connection succesful');
-  });
+mongoose.connect(DB).then(() => {
+  //console.log(con.connections);
+  console.log('DB connection succesful');
+});
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
@@ -31,5 +29,13 @@ process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION! Shutting down...');
   server.close(() => {
     process.exit(1);
+  });
+});
+
+//For heroku sigterm signal
+process.on('SIGTERM', () => {
+  console.log('SIGTERM RECEIVED. Shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated!');
   });
 });
