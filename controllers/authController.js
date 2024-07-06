@@ -86,6 +86,7 @@ exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10000),
     httpOnly: true,
+    secure: process.env.NODE_ENV === 'production'
   });
   res.status(200).json({ status: 'success' });
 };
