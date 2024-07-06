@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors')
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
@@ -25,7 +26,17 @@ app.enable('trust proxy')
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
+
+
 //1) Global middlewares
+
+//Implementing cors
+app.use(cors())
+//Access-Control-Allow-Origin *
+
+app.options('*', cors())
+//app.options('api/v1/tours/:id', cors())
+
 //Serving static files
 app.use(express.static(path.join(__dirname, `public`)));
 
