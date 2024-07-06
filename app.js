@@ -20,6 +20,7 @@ const datesRouter = require('./routes/datesRoutes');
 
 //Start express app
 const app = express();
+app.enable('trust proxy')
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
