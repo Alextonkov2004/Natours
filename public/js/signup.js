@@ -22,16 +22,13 @@ export const signup = async (name, email, password, passwordConfirm) => {
       }, 1500);
     }
   } catch (err) {
-    console.log(err);
-    if ((err.response.data.error.code = 11000)) {
-      const message = `${Object.keys(err.response.data.error.keyValue)} is already in use.`;
+   console.log(err);
+    const errMsg = err.response.data.message.split('.');
+    if (errMsg[0].startsWith('Duplicate')) {
+      const message = `${errMsg[0].split(':')[1]} is already in use.`;
       showAlert('error', message);
-    } else if ((err.response.data.error.name = 'ValidationError')) {
-      const errors = Object.values(err.response.data.error.errors).map(
-        (el) => el.message,
-      );
-      const message = `Invalid input data. ${errors.join('. ')}`;
-      showAlert('error', message);
+    } else if (errMsg[0].startsWith('Invalid')) {
+      showAlert('error', err.response.data.message);
     } else showAlert('error', err.response.data.message);
   }
 };
