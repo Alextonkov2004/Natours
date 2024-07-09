@@ -78,11 +78,11 @@ bookingSchema.post('save', async function () {
   await this.constructor.calcParticipants(this.date);
 });
 
-bookingSchema.pre(/^findOneAnd/, async function (next) {
+bookingSchema.pre(/^delete/, async function (next) {
   this.r = await this.findOne();
   next();
 });
-bookingSchema.post(/^findOneAnd/, async function () {
+bookingSchema.post(/^delete/, async function () {
   await this.r.constructor.calcParticipants(this.r.date);
 });
 

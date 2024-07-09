@@ -18,7 +18,7 @@ const cookieOptions = {
   ),
   httpOnly: true,
 }
-if (req.secure || req.headers('x-forward-proto' === 'https'))  cookieOptions.secure = true; 
+if (process.env.NODE_ENV === 'production' && (req.secure || req.headers('x-forward-proto' === 'https')))  cookieOptions.secure = true; 
   res.cookie('jwt', token, cookieOptions)
   //Remove password from output
   user.password = undefined;
@@ -163,7 +163,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       message: 'Token sent to email!',
     });
   } catch (err) {
-    user.createPasswordResetToken = undefined;
+    user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
     return next(
