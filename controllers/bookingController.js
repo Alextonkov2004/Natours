@@ -58,7 +58,9 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
           product_data: {
             name: `${tour.name} Tour`,
             description: tour.summary,
-            images: [`${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`],
+            images: [
+              `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
+            ],
           },
         },
       },
@@ -72,17 +74,9 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
-const createBookingCheckout = async (session) => {
-  const tour = session.client_reference_id;
-  const user = (await User.findOne({ email: session.customer_email }))._id;
-  const price = session.amount_total/100
-const date = session.custom_fields[0].dropdown.value
-console.log(tour, user, price, date)
-  await Booking.create({tour, user, price, date})
-};
-
+//for development
 exports.checksoldOut = catchAsync(async (req, res, next) => {
-  if (req.body.date || req.query.date) {
+  if (req.body.date) {
     const tourDate = await Dates.findById(req.body.date);
     if (tourDate.soldOut === true) {
       return next(
@@ -96,7 +90,7 @@ exports.checksoldOut = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.bookingCheckout = (req, res) => {
+exports.bookingCheckout = async (req, res, next) => {
   const signature = req.headers['stripe-signature'];
   let event;
   try {
@@ -110,7 +104,21 @@ exports.bookingCheckout = (req, res) => {
   }
 
   if (event.type === 'checkout.session.completed') {
-    createBookingCheckout(event.data.object);
+    const session = event.data.object;
+    const tour = session.client_reference_id;
+    const user = (await User.findOne({ email: session.customer_email }))._id;
+    const price = session.amount_total / 100;
+    const date = session.custom_fields[0].dropdown.value;
+    const tourDate = await Dates.findById(date);
+    if (tourDate.soldOut === true) {
+      return next(
+        new AppError(
+          'You cannot book the tour for this date because it is already sold out.',
+          400,
+        ),
+      );
+    }
+    await Booking.create({ tour, user, price, date });
 
     res.status(200).json({ received: true });
   }
