@@ -22,7 +22,7 @@ const datesRouter = require('./routes/datesRoutes');
 
 //Start express app
 const app = express();
-app.enable('trust proxy')
+//app.enable('trust proxy', 1)
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -75,7 +75,7 @@ if (process.env.NODE_ENV === 'development') {
 //Limit request from same API
 const limiter = rateLimit({
   max: 100,
-  window: 60 * 60 * 1000,
+  window: 60 * 60 * 60 * 1000,
   message: 'Too many requests from this IP, please try again in a hour!',
 });
 app.use('/api', limiter);

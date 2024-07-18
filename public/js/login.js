@@ -17,7 +17,11 @@ export const login = async (email, password) => {
       }, 1500);
     }
   } catch (err) {
-    showAlert('error', err.response.data.message);
+    if (err.message === 'Request failed with status code 429') {
+      showAlert('error', err.response.data);
+    } else {
+      showAlert('error', err.response.data.message);
+    }
   }
 };
 

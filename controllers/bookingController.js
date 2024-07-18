@@ -12,11 +12,18 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 
   const tour = await Tour.findById(req.params.tourId);
   const options = tour.startDates.map((el) => ({
-    label: el.date.toLocaleString('en-us', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }),
+    label:
+      el.soldOut === false
+        ? el.date.toLocaleString('en-us', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })
+        : `${el.date.toLocaleString('en-us', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })} (SOLD OUT)`,
     value: el._id.toLocaleString(),
   }));
 

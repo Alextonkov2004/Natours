@@ -13,6 +13,11 @@ export const bookTour = async (tourId) => {
 
     window.location.replace(session.data.session.url);
   } catch (err) {
-    showAlert('error', err);
+    if (err.message === 'Request failed with status code 429') {
+      showAlert('error', err.response.data)
+    } else {
+showAlert('error', err);
+    }
+    
   }
 };

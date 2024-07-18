@@ -18,7 +18,7 @@ const cookieOptions = {
   ),
   httpOnly: true,
 }
-if (process.env.NODE_ENV === 'production' && (req.secure || req.headers('x-forward-proto' === 'https')))  cookieOptions.secure = true; 
+if (process.env.NODE_ENV === 'production' && (req.secure))  cookieOptions.secure = true; 
   res.cookie('jwt', token, cookieOptions)
   //Remove password from output
   user.password = undefined;
