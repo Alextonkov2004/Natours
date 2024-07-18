@@ -89,7 +89,7 @@ exports.checksoldOut = catchAsync(async (req, res, next) => {
   }
   next();
 });
-/* 
+
 exports.bookingCheckout = async (req, res, next) => {
   const signature = req.headers['stripe-signature'];
   let event;
@@ -119,13 +119,11 @@ exports.bookingCheckout = async (req, res, next) => {
       );
     }
     await Booking.create({ tour, user, price, date });
-
     res.status(200).json({ received: true });
   }
 };
-*/
 
-
+/*
 const createBookingCheckout = async (session) => {
   const tour = session.client_reference_id;
   const user = (await User.findOne({ email: session.customer_email }))._id;
@@ -154,6 +152,7 @@ exports.bookingCheckout = (req, res) => {
     res.status(200).json({ received: true });
   }
   }
+  */
 exports.getAllBookings = factory.getAll(Booking);
 exports.createBooking = factory.createOne(Booking);
 exports.updateBooking = factory.updateOne(Booking);
